@@ -17,10 +17,11 @@ public:
         int maxsum = nums[0];
         for (auto i = 0; i < nums.size(); ++i)
         {
-            if (subsum + nums[i] < nums[i])
-                subsum = nums[i];
-            else
-                subsum = subsum + nums[i];
+            // if (subsum + nums[i] < nums[i])
+            //     subsum = nums[i];
+            // else
+            //     subsum = subsum + nums[i];
+            subsum = std::max(subsum + nums[i], nums[i]);
             maxsum = std::max(maxsum, subsum);
         }
         return maxsum;
