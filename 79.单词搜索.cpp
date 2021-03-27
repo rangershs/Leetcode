@@ -17,11 +17,12 @@ public:
         if (len > 0)
             width = static_cast<int>(board[0].size());
         vector<vector<bool>> visited(len, vector<bool>(width));
+        vector<vector<int>> direction{ { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 } };
         for (int i = 0; i < len; ++i)
         {
             for (int j = 0; j < width; ++j)
             {
-                ret = check(board, word, visited, i, j, 0);
+                ret = check(board, word, direction, visited, i, j, 0);
                 if (ret)
                     return ret;
             }
@@ -32,30 +33,34 @@ public:
     bool check(
         const vector<vector<char>>& board,
         const string& word,
+        const vector<vector<int>>& direction,
         vector<vector<bool>>& visited,
         int len,
         int width,
         int index)
     {
-        if (index == static_cast<int>(word.size()))
-            return true;
         if (board[len][width] != word[index])
             return false;
+        if (index == static_cast<int>(word.size()) - 1)
+            return true;
+        
         visited[len][width] = true;
-        bool leftdir = false;
-        if (len - 1 >= 0 && !visited[len-1][width])
-            leftdir = check(board, word, visited, len-1, width, index+1);
-        bool downdir = false;
-        if (width - 1 >= 0 && !visited[len][width-1])
-            downdir = check(board, word, visited, len, width-1, index+1);
-        bool rightdir = false;
-        if (len + 1 < static_cast<int>(board.size()) && !visited[len+1][width])
-            rightdir = check(board, word, visited, len+1, width, index+1);
-        bool updir = false;
-        if (width + 1 < static_cast<int>(board[0].size()) && !visited[len][width+1])
-            updir = check(board, word, visited, len, width+1, index+1);
+        bool flag = false;
+        for (const auto&item : direction)
+        {
+            int new_len = len + item[0];
+            int new_width = width + item[1];
+            if (new_len >= 0 && new_len < static_cast<int>(board.size()) &&
+                new_width >=0 && new_width < static_cast<int>(board[0].size()) &&
+                !visited[new_len][new_width])
+            {
+                flag = check(board, word, direction, visited, new_len, new_width, index+1);
+                if (flag)
+                    break;
+            }
+        }
         visited[len][width] = false;
-        return (leftdir || downdir || rightdir || updir);
+        return flag;
     }
 };
 // @lc code=end
